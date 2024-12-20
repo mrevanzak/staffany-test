@@ -10,5 +10,7 @@ export interface IUpdateShift {
   date?: string;
   startTime?: string;
   endTime?: string;
-  weekId? : string;
+  weekId?: string;
 }
+
+export type ITime = Omit<ICreateShift, "name">;
