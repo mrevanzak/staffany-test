@@ -5,6 +5,7 @@ import {
   type FindOneOptions,
   LessThan,
   MoreThanOrEqual,
+  Raw,
 } from "typeorm";
 import Shift from "../database/default/entity/shift";
 import * as shiftRepository from "../database/default/repository/shiftRepository";
@@ -76,4 +77,15 @@ export const isTimeAvailable = async ({ startTime, endTime, date }: ITime) => {
       "Timeslot is not available, please choose another time",
     );
   }
+};
+
+export const publish = async (week: number) => {
+  return shiftRepository.update(
+    {
+      date: Raw((alias) => `DATE_PART('week', ${alias}) = ${week}`),
+    },
+    {
+      published: true,
+    },
+  );
 };

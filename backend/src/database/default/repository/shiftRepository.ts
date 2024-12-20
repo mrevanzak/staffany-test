@@ -1,13 +1,14 @@
 import {
+  type DeleteResult,
+  type FindConditions,
+  type FindManyOptions,
+  type FindOneOptions,
+  type Repository,
   getRepository,
-  FindManyOptions,
-  FindOneOptions,
-  FindConditions,
-  DeleteResult,
 } from "typeorm";
+import type { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import moduleLogger from "../../../shared/functions/logger";
 import Shift from "../entity/shift";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 const logger = moduleLogger("shiftRepository");
 
@@ -20,7 +21,7 @@ export const find = async (opts?: FindManyOptions<Shift>): Promise<Shift[]> => {
 
 export const findById = async (
   id: string,
-  opts?: FindOneOptions<Shift>
+  opts?: FindOneOptions<Shift>,
 ): Promise<Shift> => {
   logger.info("Find by id");
   const repository = getRepository(Shift);
@@ -30,7 +31,7 @@ export const findById = async (
 
 export const findOne = async (
   where?: FindConditions<Shift>,
-  opts?: FindOneOptions<Shift>
+  opts?: FindOneOptions<Shift>,
 ): Promise<Shift> => {
   logger.info("Find one");
   const repository = getRepository(Shift);
@@ -45,9 +46,18 @@ export const create = async (payload: Shift): Promise<Shift> => {
   return newdata;
 };
 
+export const update: Repository<Shift>["update"] = async (
+  criteria,
+  payload,
+) => {
+  logger.info("Update");
+  const repository = getRepository(Shift);
+  return await repository.update(criteria, payload);
+};
+
 export const updateById = async (
   id: string,
-  payload: QueryDeepPartialEntity<Shift>
+  payload: QueryDeepPartialEntity<Shift>,
 ): Promise<Shift> => {
   logger.info("Update by id");
   const repository = getRepository(Shift);
@@ -56,7 +66,7 @@ export const updateById = async (
 };
 
 export const deleteById = async (
-  id: string | string[]
+  id: string | string[],
 ): Promise<DeleteResult> => {
   logger.info("Delete by id");
   const repository = getRepository(Shift);
