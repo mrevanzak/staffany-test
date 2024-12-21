@@ -1,24 +1,36 @@
-import { server as HapiServer, Request, ResponseToolkit } from "@hapi/hapi";
-import * as dotenv from "dotenv";
-import * as Qs from "qs";
+import {
+  server as HapiServer,
+  type Request,
+  type ResponseToolkit,
+} from "@hapi/hapi";
 import * as Inert from "@hapi/inert";
 import * as Vision from "@hapi/vision";
-import * as HapiSwagger from "hapi-swagger";
+import * as dotenv from "dotenv";
 import * as Cors from "hapi-cors";
+import * as HapiSwagger from "hapi-swagger";
+import * as Qs from "qs";
 
 import { serverConfig } from "./config";
-import createRoutes from "./routes";
-import { dbConnection } from "./database/index";
 import swaggerOptions from "./config/swagger";
+import { dbConnection } from "./database/index";
+import createRoutes from "./routes";
 
 dotenv.config();
 
 const init = async () => {
   const server = HapiServer({
-    port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+    port: process.env.PORT ? Number.parseInt(process.env.PORT) : 3000,
     host: "localhost",
     query: {
       parser: (query) => Qs.parse(query as any),
+    },
+    routes: {
+      validate: {
+        failAction: async (_, _, err) => {
+          console.error(err);
+          throw err;
+        },
+      },
     },
   });
 
@@ -32,10 +44,10 @@ const init = async () => {
     {
       plugin: Cors,
       options: {
-        origins: ['*'],
-        methods: ['POST, GET, OPTIONS, PATCH, PUT, DELETE'],
-      }
-    }
+        origins: ["*"],
+        methods: ["POST, GET, OPTIONS, PATCH, PUT, DELETE"],
+      },
+    },
   ]);
 
   dbConnection.getConnection();
@@ -53,9 +65,7 @@ const init = async () => {
   server.route({
     method: "*",
     path: "/{any*}",
-    handler: function (request, h) {
-      return "404 Error! Page Not Found!";
-    },
+    handler: (request, h) => "404 Error! Page Not Found!",
   });
 
   await server.start();
